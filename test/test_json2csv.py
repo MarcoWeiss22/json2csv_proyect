@@ -61,7 +61,7 @@ def test_json_to_csv_invalid_list_elements():
 
 
 def test_json_to_csv_empty_list():
-    json_data = '[]'
+    json_data = "[]"
     in_stream = io.StringIO(json_data)
     out_stream = io.StringIO()
     json_to_csv(in_stream, out_stream)
@@ -69,7 +69,9 @@ def test_json_to_csv_empty_list():
 
 
 def test_parse_arguments(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["json2csv.py", "-i", "input.json", "-o", "output.csv", "-d", ";"])
+    monkeypatch.setattr(
+        sys, "argv", ["json2csv.py", "-i", "input.json", "-o", "output.csv", "-d", ";"]
+    )
     args = parse_arguments()
     assert args.input == "input.json"
     assert args.output == "output.csv"
@@ -81,7 +83,7 @@ def test_main_with_files(tmp_path):
     d.mkdir()
     input_file = d / "input.json"
     input_file.write_text('[{"test": 123}]', encoding="utf-8")
-    
+
     output_file = d / "output.csv"
 
     sys.argv = ["json2csv.py", "-i", str(input_file), "-o", str(output_file), "-d", ","]
@@ -96,12 +98,12 @@ def test_main_with_files(tmp_path):
 def test_main_with_stdin_stdout(monkeypatch):
     json_data = '[{"stdio": "test"}]'
     monkeypatch.setattr(sys, "stdin", io.StringIO(json_data))
-    
+
     out_stream = io.StringIO()
     monkeypatch.setattr(sys, "stdout", out_stream)
-    
+
     monkeypatch.setattr(sys, "argv", ["json2csv.py"])
-    
+
     main()
     result = out_stream.getvalue()
     assert "stdio" in result
@@ -109,8 +111,10 @@ def test_main_with_stdin_stdout(monkeypatch):
 
 
 def test_main_exception_handling(monkeypatch):
-    monkeypatch.setattr(sys, "argv", ["json2csv.py", "-i", "archivo_que_no_existe.json"])
-    
+    monkeypatch.setattr(
+        sys, "argv", ["json2csv.py", "-i", "archivo_que_no_existe.json"]
+    )
+
     with pytest.raises(SystemExit) as excinfo:
         main()
     assert excinfo.value.code == 1

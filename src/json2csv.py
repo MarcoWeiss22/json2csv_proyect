@@ -8,7 +8,9 @@ from contextlib import nullcontext
 from typing import TextIO
 
 
-def json_to_csv(input_stream: TextIO, output_stream: TextIO, delimiter: str = ",") -> None:
+def json_to_csv(
+    input_stream: TextIO, output_stream: TextIO, delimiter: str = ","
+) -> None:
     """Convierte un flujo de datos JSON a formato CSV y los escribe en un flujo de salida."""
     try:
         data = json.load(input_stream)
@@ -20,7 +22,9 @@ def json_to_csv(input_stream: TextIO, output_stream: TextIO, delimiter: str = ",
     elif isinstance(data, list):
         rows = data
     else:
-        raise TypeError("El contenido del JSON debe ser un objeto o una lista de objetos.")
+        raise TypeError(
+            "El contenido del JSON debe ser un objeto o una lista de objetos."
+        )
 
     if not rows:
         return
@@ -42,10 +46,22 @@ def json_to_csv(input_stream: TextIO, output_stream: TextIO, delimiter: str = ",
 
 def parse_arguments() -> argparse.Namespace:
     """Analiza los argumentos de la línea de comandos."""
-    parser = argparse.ArgumentParser(description="Convierte un archivo JSON a formato CSV.")
-    parser.add_argument("-i", "--input", type=str, help="Archivo JSON de entrada (por defecto: stdin)")
-    parser.add_argument("-o", "--output", type=str, help="Archivo CSV de salida (por defecto: stdout)")
-    parser.add_argument("-d", "--delimiter", type=str, default=",", help="Delimitador para el archivo CSV")
+    parser = argparse.ArgumentParser(
+        description="Convierte un archivo JSON a formato CSV."
+    )
+    parser.add_argument(
+        "-i", "--input", type=str, help="Archivo JSON de entrada (por defecto: stdin)"
+    )
+    parser.add_argument(
+        "-o", "--output", type=str, help="Archivo CSV de salida (por defecto: stdout)"
+    )
+    parser.add_argument(
+        "-d",
+        "--delimiter",
+        type=str,
+        default=",",
+        help="Delimitador para el archivo CSV",
+    )
     return parser.parse_args()
 
 
@@ -56,8 +72,16 @@ def main() -> None:
     try:
         # Movemos el bloque try para atrapar errores de apertura de archivos (FileNotFoundError/OSError)
         with (
-            open(args.input, "r", encoding="utf-8") if args.input else nullcontext(sys.stdin) as infile,
-            open(args.output, "w", encoding="utf-8", newline="") if args.output else nullcontext(sys.stdout) as outfile,
+            (
+                open(args.input, "r", encoding="utf-8")
+                if args.input
+                else nullcontext(sys.stdin)
+            ) as infile,
+            (
+                open(args.output, "w", encoding="utf-8", newline="")
+                if args.output
+                else nullcontext(sys.stdout)
+            ) as outfile,
         ):
             json_to_csv(infile, outfile, delimiter=args.delimiter)
     except (OSError, ValueError, TypeError) as e:
