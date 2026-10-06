@@ -1,0 +1,44 @@
+name: CI Pipeline - json2csv
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Copiar repositorio
+      uses: actions/checkout@v4
+
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Instalar dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r REQUIREMENTS.TXT
+
+    - name: Verificar formato con Black
+      run: black --check .
+
+    - name: Verificar calidad con Ruff
+      run: ruff check .
+
+    - name: Verificar tipos con MyPy
+      run: mypy src/
+
+    - name: Verificar tipos con PyRight
+      run: pyright src/
+
+    - name: Verificar seguridad con Bandit
+      run: bandit -r src/
+
+    - name: Ejecutar pruebas y validar cobertura (>=85%)
+      run: pytest --cov=src --cov-report=term-missing --cov-fail-under=85
